@@ -34,7 +34,7 @@ public class simpleMail {
 			Email email = new SimpleEmail();
 
 			// 한글 인코딩
-			email.setCharset("euc-kr");
+//			email.setCharset("euc-kr");
 
 			// smtp서버
 			email.setHostName(HOST);
@@ -58,11 +58,10 @@ public class simpleMail {
 
 			// 제목 내용작성
 			email.setSubject("오늘은 토요일");
-			email.setMsg("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\n"
-					+ "zzzzzzzzzzzzzzzzzzzzzzzzzzzzz\nzzzzzzzzzzzzzzzzzzzzz");
+			email.setMsg("가나다라마바");
 
 			// 받는 사람 주소 입력
-			email.addTo("dbs889@naver.com");
+			email.addTo("dbs8891@gmail.com");
 
 			// 메일 보내기
 
@@ -85,7 +84,7 @@ public class simpleMail {
 			EmailAttachment att = new EmailAttachment();
 			
 			//첨부파일 경로
-			att.setPath("C:/Users/user/Desktop/기타/Smileyface.png");
+			att.setPath("d:/d_other/항정이2.jpg");
 			att.setDisposition(EmailAttachment.ATTACHMENT);
 			//첨부 파일 관련 텍스트
 			att.setDescription("웃는 이미지");
@@ -102,7 +101,7 @@ public class simpleMail {
 			// ssl연결 필요여부
 			email.setSSLOnConnect(SSL_FLAG);
 			email.setSmtpPort(SSL_PORT);
-			email.addTo("leeys9423@gmail.com");
+			email.addTo("wkdtjdqh18@gmail.com");
 			email.setFrom(userName);
 			email.setSubject("이미지파일보내기");
 			email.setMsg("웃는이미지테스트 파일");
@@ -187,9 +186,9 @@ public class simpleMail {
 			email.setSSLOnConnect(SSL_FLAG);
 			email.setSmtpPort(SSL_PORT);
 			email.setHostName(HOST);
-			email.addTo("cor_dial_09@naver.com");
+			email.addTo("dbs8891@gmail.com");
 			email.setFrom(userName);
-			email.setSubject("다용이가 좋아할 사진");
+			email.setSubject("항정이사진");
 			
 			
 			URL url = new URL("https://pbs.twimg.com/profile_images/1260824952095141888/TelAyEAr_400x400.jpg");
@@ -216,9 +215,9 @@ public class simpleMail {
 		// 메일을 보내는 클래스
 		simpleMail sendEmail = new simpleMail();
 //		sendEmail.sendSimpleMail();
-//		sendEmail.sendAttachMail();
+		sendEmail.sendAttachMail();
 //		sendEmail.sendURLMail();
-		sendEmail.sendHTMLMail();
+//		sendEmail.sendHTMLMail();
 	}
 
 }
