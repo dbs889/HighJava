@@ -13,8 +13,8 @@ import java.util.Scanner;
 import kr.or.ddit.mvc.service.IMemberService;
 import kr.or.ddit.mvc.service.MemberServiceImpl;
 import kr.or.ddit.mvc.vo.MemberVO;
-import kr.or.ddit.util.DBUtil;
-import kr.or.ddit.util.DBUtil3;
+//import kr.or.ddit.util.DBUtil;
+//import kr.or.ddit.util.DBUtil3;
 
 public class MemberController {
 	private IMemberService service;   // Service객체 변수 선언
@@ -22,7 +22,7 @@ public class MemberController {
 	
 	// 생성자
 	public MemberController() {
-		service =MemberServiceImpl.getInstance();
+		service = MemberServiceImpl.getInstance();
 		scan = new Scanner(System.in);
 	}
 	

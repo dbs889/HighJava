@@ -1,34 +1,41 @@
-package kr.or.ddit.mvc.controller;
+package kr.or.ddit.basic;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
-import kr.or.ddit.mvc.service.IMemberService;
-import kr.or.ddit.mvc.service.MemberServiceImpl;
-import kr.or.ddit.mvc.vo.MemberVO;
 import kr.or.ddit.util.DBUtil;
+import kr.or.ddit.util.DBUtil2;
 import kr.or.ddit.util.DBUtil3;
 
-public class MemberController {
-	private IMemberService service;   // Service객체 변수 선언
-	private Scanner scan;
-	
-	// 생성자
-	public MemberController() {
-		service =MemberServiceImpl.getInstance();
-		scan = new Scanner(System.in);
-	}
-	
+/*
+ * 회원을 관리하는 프로그램을 작성하시오.
+ * (오라클 DB의 MYMEMBER테이블 이용)
+ * 
+ * 아래 메뉴의 기능을 모두 구현하시오. (CRUD 구현하기 연습)
+ * 
+ * 메뉴예시)
+ * 		-- 작업 선택 --
+ *    1. 자료 추가
+ *    2. 자료 삭제
+ *    3. 자료 수정
+ *    4. 전체 자료 출력
+ *    0. 작업 끝.
+ *  ------------------
+ *  원하는 작업 선택 >>  
+ * 
+ */
+
+
+
+public class jdbcTest06Sem {
+	private Scanner scan = new Scanner(System.in);
 	
 	public static void main(String[] args) {
-		new MemberController().startMember();
+		new jdbcTest06Sem().startMember();
 	}
 	
 	public void startMember(){
@@ -67,20 +74,38 @@ public class MemberController {
 		System.out.print("회원ID >> ");
 		String memId = scan.next();
 		
-		int count = service.getMemberCount(memId);
+		int count = getMemberCount(memId);
 		
 		if(count==0){  // 없는 회원이면...
 			System.out.println(memId + "은(는) 없은 회원ID입니다.");
 			System.out.println("삭제 작업을 종료합니다.");
 			return;
 		}
-			
-		int cnt = service.deleteMember(memId);  // Service의 삭제용 메서드 호출
 		
-		if(cnt>0){
-			System.out.println(memId + "회원의 정보가 삭제되었습니다.");
-		}else{
-			System.out.println(memId + "회원 정보 삭제 실패~~");
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			
+			String sql = "DELETE FROM MYMEMBER WHERE MEM_ID = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, memId);
+			
+			int cnt = pstmt.executeUpdate();
+			
+			if(cnt>0){
+				System.out.println(memId + "회원의 정보가 삭제되었습니다.");
+			}else{
+				System.out.println(memId + "회원 정보 삭제 실패~~");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(pstmt!=null) try{ pstmt.close(); }catch(SQLException e){}
+			if(conn!=null) try{ conn.close(); }catch(SQLException e){}
 		}
 		
 	}
@@ -92,8 +117,7 @@ public class MemberController {
 		System.out.print("회원ID >> ");
 		String memId = scan.next();
 		
-		int count = service.getMemberCount(memId);
-		
+		int count = getMemberCount(memId);
 		if(count==0){  // 없는 회원이면...
 			System.out.println(memId + "은(는) 없은 회원ID입니다.");
 			System.out.println("수정 작업을 종료합니다.");
@@ -135,19 +159,32 @@ public class MemberController {
 		System.out.print("새로운 " + updateTitle + " >> ");
 		String updateData = scan.nextLine();  
 		
-		// 회원ID, 수정할컬럼명, 수정할데이터를 저장할 Map객체 생성
-		Map<String, String> paramMap = new HashMap<>();
-		paramMap.put("memid", memId);   // 입력받은 회원ID를 Map에 추가
-		paramMap.put("field", updateField);   // 수정할 컬럼명을 Map에 추가
-		paramMap.put("data", updateData);	// 수정할 데이터를 Map에 추가
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = DBUtil3.getConnection();
 			
-		int cnt = service.updateMember2(paramMap);
-		
-		if(cnt>0){
-			System.out.println("Update 성공!!");
-		}else{
-			System.out.println("Update 실패~~~");
+			String sql = "UPDATE MYMEMBER SET " + updateField + " = ? WHERE MEM_ID = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, updateData);
+			pstmt.setString(2, memId);
+			
+			int cnt = pstmt.executeUpdate();
+			
+			if(cnt>0){
+				System.out.println("Update 성공!!");
+			}else{
+				System.out.println("Update 실패~~~");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(pstmt!=null) try{ pstmt.close(); }catch(SQLException e){}
+			if(conn!=null) try{ conn.close(); }catch(SQLException e){}
 		}
+		
 		
 	}
 	
@@ -159,8 +196,7 @@ public class MemberController {
 		System.out.print("회원ID >> ");
 		String memId = scan.next();
 		
-		int count = service.getMemberCount(memId);
-		
+		int count = getMemberCount(memId);
 		if(count==0){  // 없는 회원이면...
 			System.out.println(memId + "은(는) 없은 회원ID입니다.");
 			System.out.println("수정 작업을 종료합니다.");
@@ -177,49 +213,72 @@ public class MemberController {
 		System.out.print("새로운 회원 주소 >> ");
 		String memAddr = scan.nextLine();
 		
-		// 수정할 데이터들을 VO객체에 저장한다.
-		MemberVO memVo = new MemberVO();
-		memVo.setMem_id(memId);
-		memVo.setMem_name(memName);
-		memVo.setMem_tel(memTel);
-		memVo.setMem_addr(memAddr);
+		Connection conn = null;
+		PreparedStatement pstmt = null;
 		
-		int cnt = service.updateMember(memVo);  // Service의 정보 수정 메서드를 호출
-		
-		if(cnt>0){
-			System.out.println(memId + "회원 정보 수정 완료!!!");
-		}else{
-			System.out.println(memId + "회원 정보 수정 작업 실패~~~");
+		try {
+			conn = DBUtil.getConnection();
+			
+			String sql = "UPDATE MYMEMBER SET "
+					+ " MEM_NAME = ? , MEM_TEL = ? , MEM_ADDR = ? "
+					+ " WHERE MEM_ID = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, memName);
+			pstmt.setString(2, memTel);
+			pstmt.setString(3, memAddr);
+			pstmt.setString(4, memId);
+			
+			int cnt = pstmt.executeUpdate();
+			
+			if(cnt>0){
+				System.out.println(memId + "회원 정보 수정 완료!!!");
+			}else{
+				System.out.println(memId + "회원 정보 수정 작업 실패~~~");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(pstmt!=null) try{ pstmt.close(); }catch(SQLException e){}
+			if(conn!=null) try{ conn.close(); }catch(SQLException e){}
 		}
+		
 				
 	}
 	
 	// 전체 자료 출력
 	private void displayMember(){
-		
-		// 전체 회원 정보를 가져오는 메서드를 호출하여 List객체 변수에 저장한다.
-		List<MemberVO> memList = service.getAllMember();
-		
 		System.out.println();
 		System.out.println("---------------------------------");
 		System.out.println(" ID   이름         전화번호        주소");
 		System.out.println("---------------------------------");
 		
-		if(memList==null || memList.size()==0){
-			System.out.println(" 회원 정보가 하나도 없습니다...");
-		}else{
-			// List의 데이터 개수만큼 반복 처리
-			for(MemberVO memVo : memList){
-				System.out.print(memVo.getMem_id() + "\t");
-				System.out.print(memVo.getMem_name() + "\t");
-				System.out.print(memVo.getMem_tel() + "\t");
-				System.out.println(memVo.getMem_addr());
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+//			conn = DBUtil.getConnection();
+//			conn = DBUtil2.getConnection();
+			conn = DBUtil3.getConnection();
+			
+			String sql = "SELECT * FROM MYMEMBER";
+			
+			stmt = conn.createStatement();
+			
+			rs = stmt.executeQuery(sql);
+			
+			while(rs.next()){
+				System.out.print(rs.getString("mem_id") + "\t" );
+				System.out.print(rs.getString("mem_name") + "\t" );
+				System.out.print(rs.getString("mem_tel") + "\t" );
+				System.out.println(rs.getString("mem_addr") );
 			}
+			System.out.println("---------------------------------");
+			System.out.println("출력 작업 끝...");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		
-		System.out.println("---------------------------------");
-		System.out.println("출력 작업 끝...");
-	
 		
 		
 	}
@@ -227,7 +286,8 @@ public class MemberController {
 	
 	// 추가 메서드
 	private void insertMember(){
-		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
 		System.out.println();
 		System.out.println("새로운 회원 정보 추가하기");
 		
@@ -237,8 +297,7 @@ public class MemberController {
 			System.out.print("회원 ID >> ");
 			memId = scan.next();
 			
-			cnt = service.getMemberCount(memId);
-			
+			cnt = getMemberCount(memId);
 			if(cnt>0){
 				System.out.println(memId + "은 이미 있는 ID입니다.");
 				System.out.println("다른 회원ID로 다시 입력하세요.");
@@ -255,21 +314,64 @@ public class MemberController {
 		System.out.print("주     소 >> ");
 		String memAddr = scan.nextLine();
 		
-		// insert할 데이터(입력받은 데이터)를 MemverVO객체에 담는다.
-		MemberVO memVo = new MemberVO();
-		memVo.setMem_id(memId);
-		memVo.setMem_name(memName);
-		memVo.setMem_tel(memTel);
-		memVo.setMem_addr(memAddr);
+		try {
+			conn = DBUtil.getConnection();
+			String sql = "INSERT INTO MYMEMBER (MEM_ID, MEM_NAME, MEM_TEL, MEM_ADDR) "
+					+ " VALUES(?, ?, ?, ?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, memId);
+			pstmt.setString(2, memName);
+			pstmt.setString(3, memTel);
+			pstmt.setString(4, memAddr);
 			
-		int count = service.insertMember(memVo);  // Service에 있는 추가 메서드 호출
-		
-		if(count > 0){
-			System.out.println(memId + "회원 정보 추가 성공!!!");
-		}else{
-			System.out.println(memId + "회원 정보 추가 실패~~~");
+			int count = pstmt.executeUpdate();
+			
+			if(count > 0){
+				System.out.println(memId + "회원 정보 추가 성공!!!");
+			}else{
+				System.out.println(memId + "회원 정보 추가 실패~~~");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(pstmt!=null) try{ pstmt.close(); }catch(SQLException e){}
+			if(conn!=null) try{ conn.close(); }catch(SQLException e){}
 		}
 		
+	}
+	
+	// 매개변수로 회원ID를 받아서 해당 회원ID의 개수를 반환하는 메서드
+	private int getMemberCount(String memId){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int count = 0;
+		
+		try {
+			conn = DBUtil.getConnection();
+			
+			String sql = "SELECT COUNT(*) CNT FROM MYMEMBER WHERE MEM_ID = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, memId);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()){
+				count = rs.getInt("CNT");
+			}
+			
+		} catch (SQLException e) {
+			count = 0;
+			e.printStackTrace();
+		} finally {
+			if(rs!=null) try{ rs.close(); }catch(SQLException e){}
+			if(pstmt!=null) try{ pstmt.close(); }catch(SQLException e){}
+			if(conn!=null) try{ conn.close(); }catch(SQLException e){}
+		}
+		
+		return count;
 	}
 	
 	
@@ -290,3 +392,10 @@ public class MemberController {
 	}
 
 }
+
+
+
+
+
+
+

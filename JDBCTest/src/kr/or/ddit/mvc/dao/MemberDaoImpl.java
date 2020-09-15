@@ -14,6 +14,14 @@ import kr.or.ddit.util.DBUtil;
 import kr.or.ddit.util.DBUtil3;
 
 public class MemberDaoImpl implements IMemberDao{
+	
+	private static MemberDaoImpl memDao;
+	private MemberDaoImpl(){}
+	public static MemberDaoImpl getInstance(){
+		if(memDao == null) memDao = new MemberDaoImpl();
+		
+		return memDao;
+	}
 
 	@Override
 	public int insertMember(MemberVO memVo) {

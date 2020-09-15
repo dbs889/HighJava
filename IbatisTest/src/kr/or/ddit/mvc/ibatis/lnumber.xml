@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+		PUBLIC "-//ibatis.apache.org/DTD SQL Map 2.0/EN"
+		"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+		
+<!-- 이 문서는 ibatis에서 처리할 SQL문을 작성하는 문서입니다 -->		
+
+
+<sqlMap namespace="mymember">
+
+	<insert id="insertMember" parameterClass="MemVo">
+	
+	INSERT INTO MYMEMBER (MEM_ID, MEM_NAME, MEM_TEL, MEM_ADDR)
+	VALUES(#mem_id#, #mem_name#, #mem_tel#, #mem_addr#)
+	
+	</insert>
+	
+	<delete id ="deleteMember" parameterClass="String">
+	
+	DELETE FROM MYMEMBER WHERE MEM_ID=#mem_id#  
+	
+	</delete>
+	
+	<update id="updateMember" parameterClass="MemVo">
+	UPDATE MYMEMBER SET MEM_NAME=#mem_name#,MEM_TEL=#mem_tel#,MEM_ADDR=#mem_addr#
+	WHERE MEM_ID=#mem_id#
+	</update>
+	
+	<select id ="memListAll" resultClass="MemVo">
+	SELECT * FROM MYMEMBER
+	
+	</select>
+	
+	<select id="getMember" parameterClass="String" resultClass="MemVo">
+	
+	SELECT COUNT(*) CNT FROM MYMEMBER WHERE MEM_ID=#mem_id#
+	
+	</select>
+</sqlMap>
+		
