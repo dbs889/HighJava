@@ -46,7 +46,7 @@ public class TestTest {
 		b *= 3;
 	}
 	for(i = 4; i>-1;i-=2)
-		sum += *(a+i)
+		sum += *(a+i);
 	System.out.println(sum);
 	
 	

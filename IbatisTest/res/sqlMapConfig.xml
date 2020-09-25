@@ -29,6 +29,8 @@
 		(선택) <typeAlias alias ="alias명" type = "클래스 전체 이름"/> -->	
 		<typeAlias alias="LprodVo" type="kr.or.ddit.basic.lprodVO"/>
 		<typeAlias alias="MemVo" type="kr.or.ddit.mvc.vo.MemberVO"/>
+		<typeAlias alias="BoardVO" type="kr.or.ddit.board.vo.BoardVO"/>
+		<typeAlias alias="JdbcBoardVO" type="kr.or.ddit.board.vo.JdbcBoardVO"/>
 		
 		
 		
@@ -57,6 +59,8 @@
 		
 		<sqlMap resource="kr/or/ddit/basic/lprod.xml"/>
 		<sqlMap resource="kr/or/ddit/mvc/ibatis/lnumber.xml"/>
+		<sqlMap resource="kr/or/ddit/board/ibatis/board.xml"/>
+		<sqlMap resource="kr/or/ddit/board/ibatis/boardBySem.xml"/>
 		
 
 </sqlMapConfig>

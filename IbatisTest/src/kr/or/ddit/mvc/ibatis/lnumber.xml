@@ -31,10 +31,20 @@
 	
 	</select>
 	
-	<select id="getMember" parameterClass="String" resultClass="MemVo">
+	<select id="getMember" parameterClass="String" resultClass="int">
 	
 	SELECT COUNT(*) CNT FROM MYMEMBER WHERE MEM_ID=#mem_id#
 	
 	</select>
+	
+	<!-- java Map(java.util.Map) 컬렉션을 파라미터로 받아 처리할 때 "변수명" 역할은 Map의 key값으로 한다 
+			파라미터로 가져온 값을 컬럼명들의 자리에서 사용할 경우에는 달러($)기호를 사용해서 나타낸다
+			예) $변수명$ 또는 $key값$
+			
+			-->
+	<update id="updateMember2" parameterClass="java.util.Map">
+	
+	UPDATE MYMEMBER SET $field$ = #data# WHERE MEM_ID = #memid#
+	</update>
 </sqlMap>
 		

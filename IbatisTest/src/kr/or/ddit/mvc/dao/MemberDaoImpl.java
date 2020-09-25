@@ -97,8 +97,8 @@ public class MemberDaoImpl implements IMemberDao {
 		int cnt = 0;
 		try {
 		
-			Object obj = smc.insert("mymember.updateMember", memVo);
-			if(obj == null) cnt = 1;
+			cnt = smc.update("mymember.updateMember", memVo);
+		
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -133,8 +133,7 @@ public class MemberDaoImpl implements IMemberDao {
 		
 		try {
 
-			MemberVO memVo = (MemberVO) smc.queryForObject("mymember.getMember", memId);
-			if(memVo != null) cnt =1; 
+			cnt =  (int) smc.queryForObject("mymember.getMember", memId);
 			
 			
 		} catch (SQLException e) {
@@ -148,27 +147,19 @@ public class MemberDaoImpl implements IMemberDao {
 	@Override
 	public int updateMember2(Map<String, String> paramMap) {
 		// key값 정보 ==> 회원ID --> memid,  수정할컬럼명 --> field,  수정할데이터 --> data
-		Connection conn = null;
-		PreparedStatement pstmt = null;
+
+
 		int cnt = 0;
 		try {
-//			conn = DBUtil3.getConnection();
-			
-			String sql = "UPDATE MYMEMBER SET " + 
-						paramMap.get("field") + " = ? WHERE MEM_ID = ? ";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, paramMap.get("data"));
-			pstmt.setString(2, paramMap.get("memid"));
-			
-			cnt = pstmt.executeUpdate();
+//		
+				cnt = smc.update("mymember.updateMember2", paramMap);
+				
+
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			if(pstmt!=null) try{ pstmt.close(); }catch(SQLException e){}
-			if(conn!=null) try{ conn.close(); }catch(SQLException e){}
-		}
+		} 
+
 		
 		return cnt;
 	}

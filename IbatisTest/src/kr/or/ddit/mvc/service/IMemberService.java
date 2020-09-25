@@ -41,7 +41,8 @@ public interface IMemberService {
 	public int updateMember(MemberVO memVo);
 	
 	/**
-	 * 전체 회원 정보를 DB에서 가져와 List에 담아서 반환하는 메서드
+	 * 전체 회원 정보를 DB에서 가져
+	 * 와 List에 담아서 반환하는 메서드
 	 * 
 	 * @return 회원정보(MemberVO)가 저장될 List객체
 	 */

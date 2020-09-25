@@ -137,7 +137,6 @@ public class PhoneBySemIO {
 		File file = new File("d:/d_other/" + fileName);
 
 		if (!file.exists()) {// 저장된 파일이 없으면
-//
 //			pMap = new HashMap<>();// Map객체를 새로 생성한다
 //			return pMap;
 			

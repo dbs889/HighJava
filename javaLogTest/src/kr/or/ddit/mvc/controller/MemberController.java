@@ -1,8 +1,10 @@
 package kr.or.ddit.mvc.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,29 +13,24 @@ import java.util.Scanner;
 import kr.or.ddit.mvc.service.IMemberService;
 import kr.or.ddit.mvc.service.MemberServiceImpl;
 import kr.or.ddit.mvc.vo.MemberVO;
-//import kr.or.ddit.util.DBUtil;
-//import kr.or.ddit.util.DBUtil3;
-import kr.or.ddit.util.Aes256Util;
+import kr.or.ddit.util.DBUtil3;
 
 public class MemberController {
 	private IMemberService service;   // Service객체 변수 선언
 	private Scanner scan;
-	private static Aes256Util aes256;
 	
 	// 생성자
-	public MemberController() throws Exception {
-		service = MemberServiceImpl.getInstance();
+	public MemberController() {
+		service =MemberServiceImpl.getInstance();
 		scan = new Scanner(System.in);
-		
-		aes256 = new Aes256Util();
 	}
 	
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new MemberController().startMember();
 	}
 	
-	public void startMember() throws Exception{
+	public void startMember(){
 		while(true){
 			int choice = displayMenu();
 			switch(choice){
@@ -63,18 +60,11 @@ public class MemberController {
 	}
 	
 	// 자료 삭제
-	private void deleteMember() throws NoSuchAlgorithmException, UnsupportedEncodingException, GeneralSecurityException{
-		
-		
+	private void deleteMember(){
 		System.out.println();
 		System.out.println("삭제할 회원 정보를 입력하세요.");
 		System.out.print("회원ID >> ");
-		
-		
-		String memId = aes256.encrypt(scan.next());
-		
-		
-		
+		String memId = scan.next();
 		
 		int count = service.getMemberCount(memId);
 		
@@ -87,24 +77,24 @@ public class MemberController {
 		int cnt = service.deleteMember(memId);  // Service의 삭제용 메서드 호출
 		
 		if(cnt>0){
-			System.out.println(aes256.decrypt(memId) + "회원의 정보가 삭제되었습니다.");
+			System.out.println(memId + "회원의 정보가 삭제되었습니다.");
 		}else{
-			System.out.println(aes256.decrypt(memId) + "회원 정보 삭제 실패~~");
+			System.out.println(memId + "회원 정보 삭제 실패~~");
 		}
 		
 	}
 	
 	// 자료 수정 ==> 원하는 컬럼만 선택해서 수정
-	private void updateMember2() throws NoSuchAlgorithmException, UnsupportedEncodingException, GeneralSecurityException{
+	private void updateMember2(){
 		System.out.println();
 		System.out.println("수정할 회원 정보를 입력하세요.");
 		System.out.print("회원ID >> ");
-		String memId = aes256.encrypt(scan.next());
+		String memId = scan.next();
 		
 		int count = service.getMemberCount(memId);
 		
 		if(count==0){  // 없는 회원이면...
-			System.out.println(aes256.decrypt(memId) + "은(는) 없은 회원ID입니다.");
+			System.out.println(memId + "은(는) 없은 회원ID입니다.");
 			System.out.println("수정 작업을 종료합니다.");
 			return;
 		}
@@ -162,16 +152,16 @@ public class MemberController {
 	
 	
 	// 자료 수정  ==> 전체 컬럼 수정(id제외)
-	private void updateMember() throws NoSuchAlgorithmException, UnsupportedEncodingException, GeneralSecurityException{
+	private void updateMember(){
 		System.out.println();
 		System.out.println("수정할 회원 정보를 입력하세요.");
 		System.out.print("회원ID >> ");
-		String memId = aes256.encrypt(scan.next());
+		String memId = scan.next();
 		
 		int count = service.getMemberCount(memId);
 		
 		if(count==0){  // 없는 회원이면...
-			System.out.println(aes256.decrypt(memId) + "은(는) 없은 회원ID입니다.");
+			System.out.println(memId + "은(는) 없은 회원ID입니다.");
 			System.out.println("수정 작업을 종료합니다.");
 			return;
 		}
@@ -194,17 +184,17 @@ public class MemberController {
 		memVo.setMem_addr(memAddr);
 		
 		int cnt = service.updateMember(memVo);  // Service의 정보 수정 메서드를 호출
-	
+		
 		if(cnt>0){
-			System.out.println(aes256.decrypt(memId) + "회원 정보 수정 완료!!!");
+			System.out.println(memId + "회원 정보 수정 완료!!!");
 		}else{
-			System.out.println(aes256.decrypt(memId) + "회원 정보 수정 작업 실패~~~");
+			System.out.println(memId + "회원 정보 수정 작업 실패~~~");
 		}
 				
 	}
 	
 	// 전체 자료 출력
-	private void displayMember() throws NoSuchAlgorithmException, UnsupportedEncodingException, GeneralSecurityException{
+	private void displayMember(){
 		
 		// 전체 회원 정보를 가져오는 메서드를 호출하여 List객체 변수에 저장한다.
 		List<MemberVO> memList = service.getAllMember();
@@ -219,9 +209,7 @@ public class MemberController {
 		}else{
 			// List의 데이터 개수만큼 반복 처리
 			for(MemberVO memVo : memList){
-				
-				//암호화된 회원 ID를 복원하여 출력한다
-				System.out.print(aes256.decrypt(memVo.getMem_id()) + "\t");
+				System.out.print(memVo.getMem_id() + "\t");
 				System.out.print(memVo.getMem_name() + "\t");
 				System.out.print(memVo.getMem_tel() + "\t");
 				System.out.println(memVo.getMem_addr());
@@ -237,22 +225,16 @@ public class MemberController {
 	
 	
 	// 추가 메서드
-	private void insertMember() throws Exception{
-		
-		
+	private void insertMember(){
 		
 		System.out.println();
 		System.out.println("새로운 회원 정보 추가하기");
 		
 		int cnt = 0;
-		
 		String memId;
-		String enStr;
-		
-		
 		do{
 			System.out.print("회원 ID >> ");
-			memId = aes256.encrypt(scan.next());
+			memId = scan.next();
 			
 			cnt = service.getMemberCount(memId);
 			
@@ -282,9 +264,9 @@ public class MemberController {
 		int count = service.insertMember(memVo);  // Service에 있는 추가 메서드 호출
 		
 		if(count > 0){
-			System.out.println(aes256.decrypt(memId) + "회원 정보 추가 성공!!!");
+			System.out.println(memId + "회원 정보 추가 성공!!!");
 		}else{
-			System.out.println(aes256.decrypt(memId) + "회원 정보 추가 실패~~~");
+			System.out.println(memId + "회원 정보 추가 실패~~~");
 		}
 		
 	}

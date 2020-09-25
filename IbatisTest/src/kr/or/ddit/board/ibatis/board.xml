@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+		PUBLIC "-//ibatis.apache.org/DTD SQL Map 2.0/EN"
+		"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+		
+		
+	<sqlMap namespace ="jdbcBorard">
+	
+	<insert id="insertBoard" parameterClass="BoardVO">
+	
+	INSERT INTO JDBC_BOARD(BOARD_NO,BOARD_TITLE,BOARD_WRITER,BOARD_DATE,BOARD_CNT,BOARD_CONTENT)
+	VALUES(BOARD_SEQ.NEXTVAL,#board_title#,#board_writer#,SYSDATE,0,#board_content#)
+	
+	</insert>
+	<delete id="deleteBoard" parameterClass="int">
+	DELETE FROM JDBC_BOARD WHERE BOARD_NO = #board_no#
+	</delete>
+	
+	<update id="updateBoard" parameterClass="BoardVO">
+	
+	UPDATE JDBC_BOARD SET BOARD_TITLE = #board_title#, BOARD_CONTENT = #board_content# WHERE BOARD_NO = #board_no#
+	
+	</update>
+	
+	<update id="plusCnt" parameterClass="int">
+	
+	UPDATE JDBC_BOARD SET BOARD_CNT = BOARD_CNT+1 WHERE BOARD_NO = #board_no#
+	
+	
+	</update>
+	
+	<select id="boardListAll" resultClass="BoardVO">
+	
+	SELECT * FROM JDBC_BOARD ORDER BY BOARD_NO DESC
+	
+	</select>
+	
+	<select id ="searchBoard" parameterClass="String" resultClass="BoardVO">
+	
+	SELECT * FROM JDBC_BOARD WHERE BOARD_TITLE LIKE '%' || #board_title# || '%' ORDER BY BOARD_NO DESC
+	
+	
+	</select>
+	
+	<select id ="readBoard" parameterClass="int" resultClass="BoardVO">
+	
+	SELECT * FROM JDBC_BOARD WHERE BOARD_NO = #board_no# 
+	
+	</select>
+	
+
+	
+	</sqlMap>
